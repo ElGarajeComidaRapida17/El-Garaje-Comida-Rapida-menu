@@ -122,12 +122,12 @@
       // HAMBURGUESAS - 1 CARNE
       { id: 101, name: "Simple de Res", category: "hamburguesas", img: "simplederes.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.00 }, { name: "Con Papas", price: 3.50 }] },
       { id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simplepollo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simple-chorizo.jpg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simplechorizo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
       { id: 104, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
 
       // HAMBURGUESAS - DOBLE CARNE
       { id: 106, name: "Doble de Res", category: "hamburguesas", img: "doble-res.jpg", desc: "Doble carne de res con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 3.75 }, { name: "Con Papas", price: 4.25 }] },
-      { id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doble-pollo.jpg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 5.00 }] },
+      { id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doblepollo.jpeg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 5.00 }] },
 
       // HAMBURGUESAS - CARNES MIXTAS
       { id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
@@ -157,7 +157,7 @@
       { id: 207, name: "Monterey", category: "papas", img: "papamonterey.jpeg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 },
       { id: 208, name: "Lomo Churrasco", category: "papas", img: "lomo churrasco.jpeg.jpeg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 },
       { id: 209, name: "Bandera", category: "papas", img: "bandera.jpeg.jpeg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 },
-      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
+      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
 
       // SANDWICHES
       { id: 301, name: "Sanduche Cubano", category: "sandwiches", img: "cubano.jpeg", desc: "Pan, lechuga, tomate, salsas, jamón, queso, tocino, pepinillos y papas.", price: 4.50 },
@@ -334,27 +334,3 @@
   </script>
 </body>
 </html>
-"""
-
-# 2. Función para convertir imágenes locales de Colab a Data URIs Base64
-def get_base64_image(img_path):
-    ext = img_path.split('.')[-1].lower()
-    mime_type = 'jpeg' if ext in ['jpg', 'jpeg'] else ext
-    try:
-        with open(img_path, "rb") as image_file:
-            encoded = base64.b64encode(image_file.read()).decode('utf-8')
-            return f"data:image/{mime_type};base64,{encoded}"
-    except Exception:
-        return None
-
-# 3. Procesamiento en Python: Se buscan las referencias a imágenes e inyectan los datos Base64 si la imagen existe en Colab
-image_filenames = re.findall(r'img:\s*"([^"]+)"', html_content)
-
-for img_name in set(image_filenames):
-    if os.path.exists(img_name):
-        base64_str = get_base64_image(img_name)
-        if base64_str:
-            html_content = html_content.replace(f'img: "{img_name}"', f'img: "{base64_str}"')
-
-# 4. Desplegar HTML listo en Colab
-display(HTML(html_content))
