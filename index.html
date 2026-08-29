@@ -1,4 +1,10 @@
+import base64
+import os
+import re
+from IPython.display import HTML
 
+# 1. Definición del HTML base (manteniendo toda tu lógica e interfaz intactas)
+html_content = """
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -116,73 +122,67 @@
   </div>
 
   <script>
-    // 1. CONFIGURACIÓN: Coloca aquí tu número de WhatsApp con código de país (Ej: 593999999999 para Ecuador)
     const PHONE_NUMBER = "593987016664";
 
-    // BASE DE DATOS DEL MENÚ
-    // IMPORTANTE: Cambia el nombre entre comillas en 'img' por el nombre EXACTO de la foto que subas a GitHub
     const products = [
       // HAMBURGUESAS - 1 CARNE
-      { id: 101, name: "Simple de Res", category: "hamburguesas", img: "simple-res.jpg", desc: "Pan artesanal, salsas, lechuga, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.00 }, { name: "Con Papas", price: 3.50 }] },
-      { id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simple-pollo.jpg", desc: "Pan artesanal, salsas, lechuga, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 103, name: "Simple de Paisa", category: "hamburguesas", img: "simple-paisa.jpg", desc: "Pan artesanal, salsas, lechuga, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 104, name: "Simple de Ternera", category: "hamburguesas", img: "simple-ternera.jpg", desc: "Pan artesanal, salsas, lechuga, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 105, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpg", desc: "Pan artesanal, salsas, lechuga, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
+      { id: 101, name: "Simple de Res", category: "hamburguesas", img: "simplederes.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.00 }, { name: "Con Papas", price: 3.50 }] },
+      { id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simple-pollo.jpg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simple-chorizo.jpg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 104, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
 
       // HAMBURGUESAS - DOBLE CARNE
       { id: 106, name: "Doble de Res", category: "hamburguesas", img: "doble-res.jpg", desc: "Doble carne de res con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 3.75 }, { name: "Con Papas", price: 4.25 }] },
       { id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doble-pollo.jpg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 5.00 }] },
 
       // HAMBURGUESAS - CARNES MIXTAS
-      { id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
       { id: 109, name: "Res - Chorizo", category: "hamburguesas", img: "res-chorizo.jpg", desc: "Combinación de res y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
       { id: 110, name: "Res - Chuleta", category: "hamburguesas", img: "res-chuleta.jpg", desc: "Combinación de res y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 5.00 }, { name: "Con Papas", price: 5.50 }] },
       { id: 111, name: "Pollo - Chorizo", category: "hamburguesas", img: "pollo-chorizo.jpg", desc: "Combinación de pollo y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
       { id: 112, name: "Pollo - Chuleta", category: "hamburguesas", img: "pollo-chuleta.jpg", desc: "Combinación de pollo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 6.00 }, { name: "Con Papas", price: 6.50 }] },
-      { id: 113, name: "Ternera - Paisa", category: "hamburguesas", img: "ternera-paisa.jpg", desc: "Combinación de ternera y paisa con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 5.00 }, { name: "Con Papas", price: 5.50 }] },
-      { id: 114, name: "Chorizo - Chuleta", category: "hamburguesas", img: "chorizo-chuleta.jpg", desc: "Combinación de chorizo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 7.00 }, { name: "Con Papas", price: 7.50 }] },
+      { id: 113, name: "Chorizo - Chuleta", category: "hamburguesas", img: "chorizo-chuleta.jpg", desc: "Combinación de chorizo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 7.00 }, { name: "Con Papas", price: 7.50 }] },
 
       // HAMBURGUESAS - ESPECIALES
-      { id: 115, name: "Tuca (Chorizo)", category: "hamburguesas", img: "tucachorizo.JPEG", desc: "Carne de res (200g), pollo, chorizo (ternera o paisa) y porción de papas.", price: 6.50 },
-      { id: 116, name: "Tuca (Chuleta)", category: "hamburguesas", img: "tucachuleta.JPEG", desc: "Carne de res (200g), pollo, chuleta y porción de papas.", price: 7.50 },
+      { id: 115, name: "Tuca (Chorizo)", category: "hamburguesas", img: "tucachorizo.JPEG.jpeg", desc: "Carne de res (200g), pollo, chorizo (ternera o paisa) y porción de papas.", price: 6.50 },
+      { id: 116, name: "Tuca (Chuleta)", category: "hamburguesas", img: "tucachuleta.JPEG.jpeg", desc: "Carne de res (200g), pollo, chuleta y porción de papas.", price: 7.50 },
       { id: 117, name: "Parriburguer", category: "hamburguesas", img: "parriburguer.jpg", desc: "Parrillada de pollo, carne, chancho y chorizo; carne de res (200g) y papas.", price: 6.50 },
-      { id: 118, name: "Pelúa Burger", category: "hamburguesas", img: "peluaburger.jpeg", desc: "Carne mechada con queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
+      { id: 118, name: "Pelúa Burger", category: "hamburguesas", img: "peluaburger.jpeg.jpeg", desc: "Carne mechada con queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
       { id: 119, name: "Chiliburger", category: "hamburguesas", img: "chiliburger.jpg", desc: "Chili con queso, salsa de queso, carne de res (200g) y papas.", price: 6.50 },
-      { id: 120, name: "Cheese Burger", category: "hamburguesas", img: "cheese-burger.jpeg", desc: "Triple queso, salsa de queso, carne de res (200g) y papas.", price: 7.00 },
-      { id: 121, name: "Bacon Burger", category: "hamburguesas", img: "baconburger.jpeg", desc: "Tocino (100g), queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
+      { id: 120, name: "Cheese Burger", category: "hamburguesas", img: "cheese-burger.jpg", desc: "Triple queso, salsa de queso, carne de res (200g) y papas.", price: 7.00 },
+      { id: 121, name: "Bacon Burger", category: "hamburguesas", img: "baconburger.jpeg.jpeg", desc: "Tocino (100g), queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
       { id: 122, name: "Mushroom Burger", category: "hamburguesas", img: "mushroom-burger.jpg", desc: "Champiñones, crema de queso, cebolla caramelizada, carne (200g) y papas.", price: 8.00 },
 
       // PAPAS
-      { id: 201, name: "Papa Tradicional", category: "papas", img: "papa-tradicional.jpg", desc: "Papas fritas con salchicha y salsas.", options: [{ name: "Servir", price: 1.25 }, { name: "Llevar", price: 1.50 }] },
-      { id: 202, name: "Papa Extrema", category: "papas", img: "papaextrema.jpeg", desc: "Papas fritas con salchicha, salsas, queso, salsa de queso y tocino.", price: 3.75 },
-      { id: 203, name: "Parripapa", category: "papas", img: "parripapa.jpeg", desc: "Papas fritas, parrillada (pollo, carne, chancho, chorizo), salsas y BBQ.", price: 4.25 },
-      { id: 204, name: "Chilipapa", category: "papas", img: "chilipapa.jpg", desc: "Papas fritas, chili con queso, salsa de queso y salsas.", price: 4.25 },
-      { id: 205, name: "Papa Pelúa", category: "papas", img: "papapelua.jpg", desc: "Papas fritas, carne de res mechada con queso, salsa de queso y salsas.", price: 5.50 },
-      { id: 206, name: "Pepiada", category: "papas", img: "pepiada.png", desc: "Papas fritas, ensalada de pollo con aguacate, mayonesa y cebolla.", price: 5.50 },
-      { id: 207, name: "Monterey", category: "papas", img: "monterey.jpg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 },
-      { id: 208, name: "Lomo Churrasco", category: "papas", img: "lomochurrasco.jpg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 },
-      { id: 209, name: "Bandera", category: "papas", img: "bandera.jpg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 },
-      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
+      { id: 201, name: "Papa Tradicional", category: "papas", img: "papatradicional.jpg", desc: "Papas fritas con salchicha y salsas.", price: 1.75 },
+      { id: 202, name: "Papa Extrema", category: "papas", img: "papaextrema.jpeg.jpeg", desc: "Papas fritas con salchicha, salsas, queso, salsa de queso y tocino.", price: 3.75 },
+      { id: 203, name: "Parripapa", category: "papas", img: "parripapa.jpeg.jpeg", desc: "Papas fritas, parrillada (pollo, carne, chancho, chorizo), salsas y BBQ.", price: 4.25 },
+      { id: 204, name: "Chilipapa", category: "papas", img: "chilipapa.jpeg.jpeg", desc: "Papas fritas, chili con queso, salsa de queso y salsas.", price: 4.25 },
+      { id: 205, name: "Papa Pelúa", category: "papas", img: "papapelua.jpeg.jpeg", desc: "Papas fritas, carne de res mechada con queso, salsa de queso y salsas.", price: 5.50 },
+      { id: 206, name: "Pepiada", category: "papas", img: "papapepiada.png.png", desc: "Papas fritas, ensalada de pollo con aguacate, mayonesa y cebolla.", price: 5.50 },
+      { id: 207, name: "Monterey", category: "papas", img: "papamonterey.jpeg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 },
+      { id: 208, name: "Lomo Churrasco", category: "papas", img: "lomo churrasco.jpeg.jpeg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 },
+      { id: 209, name: "Bandera", category: "papas", img: "bandera.jpeg.jpeg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 },
+      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
 
       // SANDWICHES
       { id: 301, name: "Sanduche Cubano", category: "sandwiches", img: "cubano.jpg", desc: "Pan, lechuga, tomate, salsas, jamón, queso, tocino, pepinillos y papas.", price: 4.50 },
-      { id: 302, name: "Sanduche Monterey", category: "sandwiches", img: "sanduche-monterey.jpg", desc: "Pan, lechuga, salsas, pechuga de pollo, tocino, queso, BBQ y papas.", price: 5.50 },
-      { id: 303, name: "Sanduche Pepiado", category: "sandwiches", img: "sanduche pepiado.jpg", desc: "Pan, lechuga, ensalada de pollo con aguacate, mayonesa, cebolla y papas.", price: 5.50 },
-      { id: 304, name: "Sanduche Mixed Meats", category: "sandwiches", img: "mixed-meats.jpg", desc: "Pan, lechuga, parrillada mixta, vegetales y papas.", price: 5.50 },
-      { id: 305, name: "Sanduche Pelúo", category: "sandwiches", img: "sanduche-peluo.jpg", desc: "Pan, lechuga, carne de res mechada con queso, salsa de queso y papas.", price: 6.50 },
+      { id: 302, name: "Sanduche Monterey", category: "sandwiches", img: "monterey.jpeg", desc: "Pan, lechuga, salsas, pechuga de pollo, tocino, queso, BBQ y papas.", price: 5.50 },
+      { id: 303, name: "Sanduche Pepiado", category: "sandwiches", img: "sanduchepepiado.jpeg.jpeg", desc: "Pan, lechuga, ensalada de pollo con aguacate, mayonesa, cebolla y papas.", price: 5.50 },
+      { id: 304, name: "Sanduche Mixed Meats", category: "sandwiches", img: "carnesmix.jpeg", desc: "Pan, lechuga, parrillada mixta, vegetales y papas.", price: 5.50 },
+      { id: 305, name: "Sanduche Pelúo", category: "sandwiches", img: "sanduchepeluo.png", desc: "Pan, lechuga, carne de res mechada con queso, salsa de queso y papas.", price: 6.50 },
       { id: 306, name: "Sanduche Filadelfia", category: "sandwiches", img: "filadelfia.jpg", desc: "Pan, queso crema, lomo de res con cebolla salteada, queso amarillo y papas.", price: 5.50 },
       { id: 307, name: "Sanduche Atún", category: "sandwiches", img: "atun.jpg", desc: "Pan, lechuga, atún con aderezo especial, pepinillos y papas.", price: 5.50 },
 
       // HOT DOGS
-      { id: 401, name: "Hot-Dog Tradicional", category: "hotdogs", img: "hotdog-tradicional.jpg", desc: "Salchicha, salsas y papita chip.", price: 1.75 },
-      { id: 402, name: "Hot-Dog Ranchero", category: "hotdogs", img: "hotdog-ranchero.jpg", desc: "Salchicha, salsas, papita chip, tocino, queso y salsa de queso.", price: 3.50 },
-      { id: 403, name: "Chilidog", category: "hotdogs", img: "chilidog.jpg", desc: "Salchicha, salsas, papita chip, chili, queso y salsa de queso.", price: 3.50 },
-      { id: 404, name: "Hot-Dog Pelúo", category: "hotdogs", img: "hotdog-peluo.jpg", desc: "Salchicha, salsas, papita chip, carne guisada, queso y salsa de queso.", price: 4.75 }
+      { id: 401, name: "Hot-Dog Tradicional", category: "hotdogs", img: "hotdog.jpeg", desc: "Salchicha, salsas y papita chip.", price: 1.75 },
+      { id: 402, name: "Hot-Dog Ranchero", category: "hotdogs", img: "ranchero.jpeg", desc: "Salchicha, salsas, papita chip, tocino, queso y salsa de queso.", price: 3.50 },
+      { id: 403, name: "Chilidog", category: "hotdogs", img: "chilidog.jpeg", desc: "Salchicha, salsas, papita chip, chili, queso y salsa de queso.", price: 3.50 },
+      { id: 404, name: "Hot-Dog Pelúo", category: "hotdog
     ];
 
     let cart = [];
 
-    // Cargar productos en pantalla
     function renderProducts(filter = 'todos') {
       const grid = document.getElementById('product-grid');
       grid.innerHTML = '';
@@ -223,7 +223,6 @@
       });
     }
 
-    // Actualizar precio visual según opción seleccionada
     function updateCardPrice(id) {
       const prod = products.find(p => p.id === id);
       const select = document.getElementById(`select-${id}`);
@@ -231,14 +230,12 @@
       document.getElementById(`price-${id}`).innerText = `$${selectedOpt.price.toFixed(2)}`;
     }
 
-    // Filtrar por categorías
     function filterCategory(cat) {
       document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
       renderProducts(cat);
     }
 
-    // Agregar producto al carrito
     function addToCart(id) {
       const prod = products.find(p => p.id === id);
       let selectedName = prod.name;
@@ -314,7 +311,6 @@
       document.getElementById('cart-modal').style.display = 'none';
     }
 
-    // Enviar a WhatsApp
     function sendWhatsApp() {
       if (cart.length === 0) return alert('Agrega productos al carrito primero.');
 
@@ -324,28 +320,48 @@
 
       if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
 
-      let message = `*¡Nuevo Pedido - El Garaje!* 🍔\n\n`;
-      message += `*Cliente:* ${name}\n`;
-      message += `*Ubicación/Dirección:* ${address}\n`;
-      if (notes) message += `*Notas:* ${notes}\n`;
-      message += `\n*Detalle del pedido:*\n`;
+      let message = `*¡Nuevo Pedido - El Garaje!* 🍔\\n\\n`;
+      message += `*Cliente:* ${name}\\n`;
+      message += `*Ubicación/Dirección:* ${address}\\n`;
+      if (notes) message += `*Notas:* ${notes}\\n`;
+      message += `\\n*Detalle del pedido:*\\n`;
 
       cart.forEach(i => {
-        message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`;
+        message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\\n`;
       });
 
       const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      message += `\n*Total a pagar:* $${total.toFixed(2)}`;
+      message += `\\n*Total a pagar:* $${total.toFixed(2)}`;
 
       const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
     }
 
-    // Cargar inicial
     renderProducts();
   </script>
 </body>
 </html>
 """
 
+# 2. Función para convertir imágenes locales de Colab a Data URIs Base64
+def get_base64_image(img_path):
+    ext = img_path.split('.')[-1].lower()
+    mime_type = 'jpeg' if ext in ['jpg', 'jpeg'] else ext
+    try:
+        with open(img_path, "rb") as image_file:
+            encoded = base64.b64encode(image_file.read()).decode('utf-8')
+            return f"data:image/{mime_type};base64,{encoded}"
+    except Exception:
+        return None
+
+# 3. Procesamiento en Python: Se buscan las referencias a imágenes e inyectan los datos Base64 si la imagen existe en Colab
+image_filenames = re.findall(r'img:\s*"([^"]+)"', html_content)
+
+for img_name in set(image_filenames):
+    if os.path.exists(img_name):
+        base64_str = get_base64_image(img_name)
+        if base64_str:
+            html_content = html_content.replace(f'img: "{img_name}"', f'img: "{base64_str}"')
+
+# 4. Desplegar HTML listo en Colab
 display(HTML(html_content))
