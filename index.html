@@ -304,31 +304,31 @@
       document.getElementById('cart-modal').style.display = 'none';
     }
 
-    function sendWhatsApp() {
-      if (cart.length === 0) return alert('Agrega productos al carrito primero.');
+   function sendWhatsApp() {
+  if (cart.length === 0) return alert('Agrega productos al carrito primero.');
 
-      const name = document.getElementById('cust-name').value.trim();
-      const address = document.getElementById('cust-address').value.trim();
-      const notes = document.getElementById('cust-notes').value.trim();
+  const name = document.getElementById('cust-name').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const notes = document.getElementById('cust-notes').value.trim();
 
-      if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
+  if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
 
-      let message = `*¡Nuevo Pedido - El Garaje!* 🍔\\n\\n`;
-      message += `*Cliente:* ${name}\\n`;
-      message += `*Ubicación/Dirección:* ${address}\\n`;
-      if (notes) message += `*Notas:* ${notes}\\n`;
-      message += `\\n*Detalle del pedido:*\\n`;
+  let message = `*¡Nuevo Pedido - El Garaje!*\n\n`;
+  message += `*Cliente:* ${name}\n`;
+  message += `*Ubicación/Dirección:* ${address}\n`;
+  if (notes) message += `*Notas:* ${notes}\n`;
+  message += `\n*Detalle del pedido:*\n`;
 
-      cart.forEach(i => {
-        message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\\n`;
-      });
+  cart.forEach(i => {
+    message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`;
+  });
 
-      const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      message += `\\n*Total a pagar:* $${total.toFixed(2)}`;
+  const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  message += `\n*Total a pagar:* $${total.toFixed(2)}`;
 
-      const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-      window.open(url, '_blank');
-    }
+  const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
 
     renderProducts();
   </script>
