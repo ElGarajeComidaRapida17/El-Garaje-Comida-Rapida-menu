@@ -3,326 +3,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taply No-Code Builder - Web Version</title>
-  <!-- Tailwind CSS por CDN para los estilos sin instalar dependencias -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 text-gray-800 h-screen w-screen flex flex-col overflow-hidden font-sans">
-
-  <!-- BARRA SUPERIOR (HEADER) -->
-  <header class="h-14 bg-white border-b px-6 flex items-center justify-between z-10">
-    <div class="flex items-center gap-2">
-      <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
-      <h1 class="font-bold text-base text-gray-900">Taply Builder - Web App Demo</h1>
-    </div>
-    <button onclick="exportJSON()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition-all">
-      Exportar Configuración JSON
-    </button>
-  </header>
-
-  <!-- ÁREA DE TRABAJO PRINCIPAL -->
-  <div class="flex-1 flex overflow-hidden">
-    
-    <!-- PANEL IZQUIERDO: HERRAMIENTAS -->
-    <aside class="w-80 bg-white border-r p-4 overflow-y-auto flex flex-col gap-6">
-      <div>
-        <h3 class="font-semibold text-xs uppercase tracking-wider text-gray-400 mb-3">Añadir Bloques</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="addBlock('HEADER')" class="p-2 border rounded-lg text-xs font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all text-left">
-            + Encabezado
-          </button>
-          <button onclick="addBlock('BANNER')" class="p-2 border rounded-lg text-xs font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all text-left">
-            + Banner
-          </button>
-          <button onclick="addBlock('PRODUCTS')" class="p-2 border rounded-lg text-xs font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all text-left">
-            + Productos
-          </button>
-          <button onclick="addBlock('SOCIALS')" class="p-2 border rounded-lg text-xs font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all text-left">
-            + Redes / WA
-          </button>
-        </div>
-      </div>
-
-      <hr class="border-gray-100">
-
-      <div>
-        <h3 class="font-semibold text-xs uppercase tracking-wider text-gray-400 mb-3">Estilos Globales</h3>
-        <div class="flex flex-col gap-3">
-          <div>
-            <label class="text-xs text-gray-600 block mb-1">Color Principal</label>
-            <input type="color" id="primaryColorInput" value="#2563eb" onchange="updateTheme('primaryColor', this.value)" class="w-full h-9 rounded border border-gray-200 p-1 cursor-pointer">
-          </div>
-          <div>
-            <label class="text-xs text-gray-600 block mb-1">Color de Fondo PWA</label>
-            <input type="color" id="backgroundColorInput" value="#ffffff" onchange="updateTheme('backgroundColor', this.value)" class="w-full h-9 rounded border border-gray-200 p-1 cursor-pointer">
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- PANEL CENTRAL: VISTA PREVIA MÓVIL (CANVAS) -->
-    <div class="flex-1 bg-gray-100 flex items-center justify-center p-4 overflow-y-auto">
-      <div id="phoneMockup" class="w-[360px] h-[700px] rounded-[36px] shadow-2xl border-[8px] border-gray-900 overflow-y-auto relative flex flex-col transition-all bg-white">
-        <!-- Notch del Teléfono -->
-        <div class="w-28 h-4 bg-gray-900 mx-auto rounded-b-xl sticky top-0 z-50"></div>
-        
-        <!-- Contenedor del contenido dinámico -->
-        <div id="phoneContent" class="flex-1 pb-6"></div>
-      </div>
-    </div>
-
-    <!-- PANEL DERECHO: INSPECTOR DE PROPIEDADES -->
-    <aside id="editorSidebar" class="w-80 bg-white border-l p-4 overflow-y-auto">
-      <div class="text-center text-gray-400 text-xs mt-12">
-        Haz clic en cualquier bloque de la vista previa para editar sus propiedades.
-      </div>
-    </aside>
-
-  </div>
-
-  <!-- LÓGICA DE LA APLICACIÓN (VANILLA JAVASCRIPT) -->
-  <script>
-    // Estado global en memoria
-    let storeConfig = {
-      slug: 'mi-tienda',
-      theme: {
-        primaryColor: '#2563eb',
-        backgroundColor: '#ffffff'
-      },
-      blocks: [
-        {
-          id: 'b1',
-          type: 'HEADER',
-          data: {
-            title: 'Mi Tienda Digital',
-            subtitle: 'Catálogo de productos y servicios',
-            logoUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150'
-          }
-        },
-        {
-          id: 'b2',
-          type: 'PRODUCTS',
-          data: {
-            items: [
-              { id: 'p1', name: 'Producto 1', price: 12.50, imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300' },
-              { id: 'p2', name: 'Producto 2', price: 25.00, imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300' }
-            ]
-          }
-        },
-        {
-          id: 'b3',
-          type: 'SOCIALS',
-          data: {
-            whatsappNumber: '593991234567',
-            instagramUser: 'mitienda'
-          }
-        }
-      ]
-    };
-
-    let activeBlockId = 'b1';
-
-    // Función principal para renderizar la interfaz
-    function renderApp() {
-      const phoneContent = document.getElementById('phoneContent');
-      const phoneMockup = document.getElementById('phoneMockup');
-      
-      phoneMockup.style.backgroundColor = storeConfig.theme.backgroundColor;
-      phoneContent.innerHTML = '';
-
-      storeConfig.blocks.forEach(block => {
-        const isActive = block.id === activeBlockId;
-        const wrapper = document.createElement('div');
-        wrapper.className = `relative cursor-pointer transition-all ${isActive ? 'ring-2 ring-blue-500 ring-offset-1' : 'hover:ring-1 hover:ring-gray-300'}`;
-        wrapper.onclick = () => selectBlock(block.id);
-
-        let htmlContent = '';
-
-        if (block.type === 'HEADER') {
-          htmlContent = `
-            <header class="text-center py-6 px-4">
-              ${block.data.logoUrl ? `<img src="${block.data.logoUrl}" class="w-20 h-20 mx-auto rounded-full object-cover mb-3 shadow">` : ''}
-              <h1 class="text-xl font-bold text-gray-900">${block.data.title || 'Nombre de tienda'}</h1>
-              <p class="text-xs text-gray-500 mt-1">${block.data.subtitle || ''}</p>
-            </header>
-          `;
-        } else if (block.type === 'BANNER') {
-          htmlContent = `
-            <div class="w-full my-2 px-4">
-              <img src="${block.data.imageUrl || 'https://via.placeholder.com/600x200'}" class="w-full h-36 object-cover rounded-xl shadow-sm">
-            </div>
-          `;
-        } else if (block.type === 'PRODUCTS') {
-          const items = block.data.items || [];
-          let productsHTML = items.map(item => `
-            <div class="bg-white rounded-lg p-2.5 border shadow-sm flex flex-col justify-between">
-              <div>
-                <img src="${item.imageUrl || 'https://via.placeholder.com/150'}" class="w-full h-24 object-cover rounded-md mb-2">
-                <span class="font-semibold text-xs text-gray-800 block truncate">${item.name}</span>
-              </div>
-              <div>
-                <span class="text-xs font-bold mt-1 block" style="color: ${storeConfig.theme.primaryColor}">$${Number(item.price).toFixed(2)}</span>
-                <button style="background-color: ${storeConfig.theme.primaryColor}" class="mt-2 w-full text-white text-[10px] py-1 px-2 rounded font-medium">Pedir</button>
-              </div>
-            </div>
-          `).join('');
-
-          htmlContent = `<div class="grid grid-cols-2 gap-2.5 p-4">${productsHTML || '<p class="text-xs text-gray-400 col-span-2 text-center">Catálogo vacío</p>'}</div>`;
-        } else if (block.type === 'SOCIALS') {
-          htmlContent = `
-            <div class="p-4 flex flex-col gap-2">
-              ${block.data.whatsappNumber ? `<button class="w-full py-2.5 bg-emerald-600 text-white rounded-xl font-semibold text-xs shadow">Enviar Pedido por WhatsApp</button>` : ''}
-              ${block.data.instagramUser ? `<div class="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-semibold text-xs shadow text-center">@${block.data.instagramUser}</div>` : ''}
-            </div>
-          `;
-        }
-
-        wrapper.innerHTML = htmlContent;
-        phoneContent.appendChild(wrapper);
-      });
-
-      renderSidebarEditor();
+  <title>El Garaje - Comida Rápida</title>
+  <style>
+    :root {
+      --primary: #E1AD01;
+      --secondary: #1d3557;
+      --light: #0b0f19;
+      --dark: #212529;
+      --accent: #25d366;
     }
 
-    // Renderiza el panel de edición según el bloque seleccionado
-    function renderSidebarEditor() {
-      const editorSidebar = document.getElementById('editorSidebar');
-      const activeBlock = storeConfig.blocks.find(b => b.id === activeBlockId);
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: var(--light); padding-bottom: 90px; }
 
-      if (!activeBlock) {
-        editorSidebar.innerHTML = `<div class="text-center text-gray-400 text-xs mt-12">Haz clic en un bloque para editarlo.</div>`;
+    /* Header */
+    header { background-color: var(--primary); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    header h1 { font-size: 1.5rem; }
+
+    /* Categorías */
+    .categories { display: flex; gap: 0.5rem; overflow-x: auto; padding: 1rem; background: var(--dark); border-bottom: 1px solid #2d3238; }
+    .btn-cat { border: none; background: #eee; padding: 0.6rem 1.2rem; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 600; transition: 0.2s; }
+    .btn-cat.active { background: var(--primary); color: white; }
+
+    /* Catálogo */
+    .container { max-width: 900px; margin: 1rem auto; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+    .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; }
+
+    /* Imagen del producto */
+    .card-img { width: 100%; height: 160px; object-fit: cover; background: #e9ecef; display: block; }
+
+    .card-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; background: var(--dark); }
+    .card-title { font-size: 1.1rem; font-weight: bold; color: #ffffff; margin-bottom: 0.3rem; }
+    .card-desc { font-size: 0.85rem; color: #adb5bd; margin-bottom: 1rem; flex-grow: 1; }
+
+    /* Opciones y precio */
+    .variant-select { width: 100%; padding: 0.4rem; border: 1px solid #495057; border-radius: 4px; margin-bottom: 0.8rem; font-size: 0.85rem; background: #1a1d20; color: #ffffff; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .price { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+    .btn-add { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; }
+    .btn-add:hover { background: #c02b37; }
+
+    /* Carrito Flotante */
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--secondary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 90; }
+    .btn-cart { background: var(--accent); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+
+    /* Modal Carrito */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: flex-end; }
+    .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 15px 15px 0 0; padding: 1.5rem; max-height: 85vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; margin: 0.8rem 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+    .cart-controls { display: flex; gap: 0.5rem; align-items: center; }
+    .btn-qty { width: 28px; height: 28px; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .form-group { margin-top: 1rem; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 600; }
+    .form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
+    .btn-send { background: var(--accent); color: white; border: none; width: 100%; padding: 0.9rem; margin-top: 1.2rem; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🍔 El Garaje Comida Rápida</h1>
+  </header>
+
+  <!-- Filtros de Categoría -->
+  <div class="categories">
+    <button class="btn-cat active" onclick="filterCategory('todos')">Todos</button>
+    <button class="btn-cat" onclick="filterCategory('hamburguesas')">Hamburguesas</button>
+    <button class="btn-cat" onclick="filterCategory('papas')">Papas</button>
+    <button class="btn-cat" onclick="filterCategory('sandwiches')">Sanduches</button>
+    <button class="btn-cat" onclick="filterCategory('hotdogs')">Hot-Dogs</button>
+  </div>
+
+  <!-- Contenedor del Catálogo -->
+  <div class="container">
+    <div class="grid" id="product-grid"></div>
+  </div>
+
+  <!-- Barra Inferior del Carrito -->
+  <div class="cart-bar" onclick="openCart()">
+    <div>🛒 Ver Carrito (<span id="cart-count">0</span>)</div>
+    <button class="btn-cart">Total: $<span id="cart-total">0.00</span></button>
+  </div>
+
+  <!-- Modal del Carrito / Checkout -->
+  <div class="modal" id="cart-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Tu Pedido</h3>
+        <button onclick="closeCart()" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">✕</button>
+      </div>
+
+      <div id="cart-items"></div>
+
+      <div class="form-group">
+        <label>Nombre Completo:</label>
+        <input type="text" id="cust-name" placeholder="Ej. Juan Pérez">
+      </div>
+      <div class="form-group">
+        <label>Dirección de Entrega / Mesa:</label>
+        <input type="text" id="cust-address" placeholder="Ej. Calle 10 y Av. Central / Mesa 4">
+      </div>
+      <div class="form-group">
+        <label>Notas Adicionales:</label>
+        <textarea id="cust-notes" rows="2" placeholder="Ej. Sin cebolla, pagaré con billete de $20"></textarea>
+      </div>
+
+      <button class="btn-send" onclick="sendWhatsApp()">Confirmar y Enviar por WhatsApp</button>
+    </div>
+  </div>
+
+  <script>
+    const PHONE_NUMBER = "593987016664";
+
+    const products = [
+      // HAMBURGUESAS - 1 CARNE
+      { id: 101, name: "Simple de Res", category: "hamburguesas", img: "simplederes.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.00 }, { name: "Con Papas", price: 3.50 }] },
+      { id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simplepollo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simplechorizo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 104, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
+
+      // HAMBURGUESAS - DOBLE CARNE
+      { id: 106, name: "Doble de Res", category: "hamburguesas", img: "doblederes.jpeg", desc: "Doble carne de res con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 3.75 }, { name: "Con Papas", price: 4.25 }] },
+      { id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doblepollo.jpeg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 5.00 }] },
+
+      // HAMBURGUESAS - CARNES MIXTAS
+      { id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 109, name: "Res - Chorizo", category: "hamburguesas", img: "res-chorizo.jpeg", desc: "Combinación de res y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
+      { id: 110, name: "Res - Chuleta", category: "hamburguesas", img: "res-chuleta.jpeg", desc: "Combinación de res y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 5.00 }, { name: "Con Papas", price: 5.50 }] },
+      { id: 111, name: "Pollo - Chorizo", category: "hamburguesas", img: "pollo-chorizo.jpeg", desc: "Combinación de pollo y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
+      { id: 112, name: "Pollo - Chuleta", category: "hamburguesas", img: "pollo-chuleta.jpeg", desc: "Combinación de pollo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 6.00 }, { name: "Con Papas", price: 6.50 }] },
+      { id: 113, name: "Chorizo - Chuleta", category: "hamburguesas", img: "chorizo-chuleta.jpeg", desc: "Combinación de chorizo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 7.00 }, { name: "Con Papas", price: 7.50 }] },
+
+      // HAMBURGUESAS - ESPECIALES
+      { id: 115, name: "Tuca (Chorizo)", category: "hamburguesas", img: "tucachorizo.JPEG.jpeg", desc: "Carne de res (200g), pollo, chorizo (ternera o paisa) y porción de papas.", price: 6.50 },
+      { id: 116, name: "Tuca (Chuleta)", category: "hamburguesas", img: "tucachuleta.JPEG.jpeg", desc: "Carne de res (200g), pollo, chuleta y porción de papas.", price: 7.50 },
+      { id: 117, name: "Parriburguer", category: "hamburguesas", img: "parriburguer.jpeg", desc: "Parrillada de pollo, carne, chancho y chorizo; carne de res (200g) y papas.", price: 6.50 },
+      { id: 118, name: "Pelúa Burger", category: "hamburguesas", img: "peluaburger.jpeg.jpeg", desc: "Carne mechada con queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
+      { id: 119, name: "Chiliburger", category: "hamburguesas", img: "chiliburger.jpeg", desc: "Chili con queso, salsa de queso, carne de res (200g) y papas.", price: 6.50 },
+      { id: 120, name: "Cheese Burger", category: "hamburguesas", img: "cheese-burger.jpeg", desc: "Triple queso, salsa de queso, carne de res (200g) y papas.", price: 7.00 },
+      { id: 121, name: "Bacon Burger", category: "hamburguesas", img: "baconburger.jpeg.jpeg", desc: "Tocino (100g), queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
+      { id: 122, name: "Mushroom Burger", category: "hamburguesas", img: "mushroom.png", desc: "Champiñones, crema de queso, cebolla caramelizada, carne (200g) y papas.", price: 8.00 },
+
+      // PAPAS
+      { id: 201, name: "Papa Tradicional", category: "papas", img: "papatradicional.jpg", desc: "Papas fritas con salchicha y salsas.", price: 1.75 },
+      { id: 202, name: "Papa Extrema", category: "papas", img: "papaextrema.jpeg.jpeg", desc: "Papas fritas con salchicha, salsas, queso, salsa de queso y tocino.", price: 3.75 },
+      { id: 203, name: "Parripapa", category: "papas", img: "parripapa.jpeg.jpeg", desc: "Papas fritas, parrillada (pollo, carne, chancho, chorizo), salsas y BBQ.", price: 4.25 },
+      { id: 204, name: "Chilipapa", category: "papas", img: "chilipapa.jpeg.jpeg", desc: "Papas fritas, chili con queso, salsa de queso y salsas.", price: 4.25 },
+      { id: 205, name: "Papa Pelúa", category: "papas", img: "papapelua.jpeg.jpeg", desc: "Papas fritas, carne de res mechada con queso, salsa de queso y salsas.", price: 5.50 },
+      { id: 206, name: "Pepiada", category: "papas", img: "papapepiada.png.png", desc: "Papas fritas, ensalada de pollo con aguacate, mayonesa y cebolla.", price: 5.50 },
+      { id: 207, name: "Monterey", category: "papas", img: "papamonterey.jpeg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 },
+      { id: 208, name: "Lomo Churrasco", category: "papas", img: "lomo churrasco.jpeg.jpeg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 },
+      { id: 209, name: "Bandera", category: "papas", img: "bandera.jpeg.jpeg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 },
+      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
+
+      // SANDWICHES
+      { id: 301, name: "Sanduche Cubano", category: "sandwiches", img: "cubano.jpeg", desc: "Pan, lechuga, tomate, salsas, jamón, queso, tocino, pepinillos y papas.", price: 4.50 },
+      { id: 302, name: "Sanduche Monterey", category: "sandwiches", img: "monterey.jpeg", desc: "Pan, lechuga, salsas, pechuga de pollo, tocino, queso, BBQ y papas.", price: 5.50 },
+      { id: 303, name: "Sanduche Pepiado", category: "sandwiches", img: "sanduchepepiado.jpeg.jpeg", desc: "Pan, lechuga, ensalada de pollo con aguacate, mayonesa, cebolla y papas.", price: 5.50 },
+      { id: 304, name: "Sanduche Mixed Meats", category: "sandwiches", img: "carnesmix.jpeg", desc: "Pan, lechuga, parrillada mixta, vegetales y papas.", price: 5.50 },
+      { id: 305, name: "Sanduche Pelúo", category: "sandwiches", img: "sanduchepeluo.png", desc: "Pan, lechuga, carne de res mechada con queso, salsa de queso y papas.", price: 6.50 },
+      { id: 306, name: "Sanduche Filadelfia", category: "sandwiches", img: "filadelfia.jpeg", desc: "Pan, queso crema, lomo de res con cebolla salteada, queso amarillo y papas.", price: 5.50 },
+      { id: 307, name: "Sanduche Atún", category: "sandwiches", img: "atun.jpeg", desc: "Pan, lechuga, atún con aderezo especial, pepinillos y papas.", price: 5.50 },
+
+      // HOT DOGS
+      { id: 401, name: "Hot-Dog Tradicional", category: "hotdogs", img: "hotdog.jpeg", desc: "Salchicha, salsas y papita chip.", price: 1.75 },
+      { id: 402, name: "Hot-Dog Ranchero", category: "hotdogs", img: "ranchero.jpeg", desc: "Salchicha, salsas, papita chip, tocino, queso y salsa de queso.", price: 3.50 },
+      { id: 403, name: "Chilidog", category: "hotdogs", img: "chilidog.jpeg", desc: "Salchicha, salsas, papita chip, chili, queso y salsa de queso.", price: 3.50 }
+    ];
+
+    let cart = [];
+
+    function renderProducts(filter = 'todos') {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+
+      const filtered = filter === 'todos' ? products : products.filter(p => p.category === filter);
+
+      filtered.forEach(p => {
+        let optionsHTML = '';
+        let initialPrice = p.price;
+
+        if (p.options) {
+          initialPrice = p.options[0].price;
+          optionsHTML = `<select class="variant-select" id="select-${p.id}" onchange="updateCardPrice(${p.id})">
+            ${p.options.map((opt, i) => `<option value="${i}">${opt.name} ($${opt.price.toFixed(2)})</option>`).join('')}
+          </select>`;
+        }
+
+        const imgSrc = p.img ? p.img : 'https://via.placeholder.com/300x160?text=Comida+Rapida';
+
+        grid.innerHTML += `
+          <div class="card">
+            <img src="${imgSrc}" alt="${p.name}" class="card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160?text=${encodeURIComponent(p.name)}';">
+            <div class="card-content">
+              <div>
+                <div class="card-title">${p.name}</div>
+                <div class="card-desc">${p.desc}</div>
+              </div>
+              <div>
+                ${optionsHTML}
+                <div class="card-footer">
+                  <span class="price" id="price-${p.id}">$${initialPrice.toFixed(2)}</span>
+                  <button class="btn-add" onclick="addToCart(${p.id})">Agregar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function updateCardPrice(id) {
+      const prod = products.find(p => p.id === id);
+      const select = document.getElementById(`select-${id}`);
+      const selectedOpt = prod.options[select.value];
+      document.getElementById(`price-${id}`).innerText = `$${selectedOpt.price.toFixed(2)}`;
+    }
+
+    function filterCategory(cat) {
+      document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderProducts(cat);
+    }
+
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      let selectedName = prod.name;
+      let selectedPrice = prod.price;
+
+      if (prod.options) {
+        const select = document.getElementById(`select-${id}`);
+        const opt = prod.options[select.value];
+        selectedName = `${prod.name} (${opt.name})`;
+        selectedPrice = opt.price;
+      }
+
+      const itemKey = `${id}-${selectedName}`;
+      const existing = cart.find(i => i.key === itemKey);
+
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ key: itemKey, id: id, name: selectedName, price: selectedPrice, qty: 1 });
+      }
+
+      updateCartUI();
+    }
+
+    function changeQty(key, delta) {
+      const item = cart.find(i => i.key === key);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          cart = cart.filter(i => i.key !== key);
+        }
+      }
+      updateCartUI();
+      renderCartItems();
+    }
+
+    function updateCartUI() {
+      const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
+      const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+      document.getElementById('cart-count').innerText = totalCount;
+      document.getElementById('cart-total').innerText = totalPrice.toFixed(2);
+    }
+
+    function renderCartItems() {
+      const container = document.getElementById('cart-items');
+      if (cart.length === 0) {
+        container.innerHTML = '<p style="text-align:center; margin: 2rem 0; color: #777;">Tu carrito está vacío</p>';
         return;
       }
 
-      let formHTML = `
-        <div class="flex justify-between items-center border-b pb-2 mb-4">
-          <h3 class="font-bold text-sm text-gray-800">Editar: ${activeBlock.type}</h3>
-          <button onclick="removeBlock('${activeBlock.id}')" class="text-xs text-red-500 font-medium">Eliminar</button>
-        </div>
-      `;
-
-      if (activeBlock.type === 'HEADER') {
-        formHTML += `
-          <div class="flex flex-col gap-3">
-            <div>
-              <label class="text-xs font-medium text-gray-600 block mb-1">Título</label>
-              <input type="text" value="${activeBlock.data.title || ''}" oninput="updateBlockData('title', this.value)" class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div>
-              <label class="text-xs font-medium text-gray-600 block mb-1">Subtítulo</label>
-              <input type="text" value="${activeBlock.data.subtitle || ''}" oninput="updateBlockData('subtitle', this.value)" class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div>
-              <label class="text-xs font-medium text-gray-600 block mb-1">URL de Logo</label>
-              <input type="text" value="${activeBlock.data.logoUrl || ''}" oninput="updateBlockData('logoUrl', this.value)" class="w-full border rounded-lg p-2 text-xs">
-            </div>
-          </div>
-        `;
-      } else if (activeBlock.type === 'BANNER') {
-        formHTML += `
+      container.innerHTML = cart.map(i => `
+        <div class="cart-item">
           <div>
-            <label class="text-xs font-medium text-gray-600 block mb-1">URL de Imagen Banner</label>
-            <input type="text" value="${activeBlock.data.imageUrl || ''}" oninput="updateBlockData('imageUrl', this.value)" class="w-full border rounded-lg p-2 text-xs">
+            <strong>${i.name}</strong><br>
+            <small>$${i.price.toFixed(2)} c/u</small>
           </div>
-        `;
-      } else if (activeBlock.type === 'PRODUCTS') {
-        formHTML += `
-          <button onclick="addProduct()" class="w-full bg-emerald-50 text-emerald-700 border border-emerald-200 py-2 rounded-lg text-xs font-semibold mb-3">+ Añadir Producto</button>
-          <div class="flex flex-col gap-2">
-            ${(activeBlock.data.items || []).map((prod, idx) => `
-              <div class="p-2 border rounded-lg bg-gray-50 flex flex-col gap-1">
-                <span class="text-[10px] font-bold text-gray-400">Producto #${idx + 1}</span>
-                <input type="text" value="${prod.name}" oninput="updateProduct(${idx}, 'name', this.value)" placeholder="Nombre" class="border rounded p-1 text-xs">
-                <input type="number" value="${prod.price}" oninput="updateProduct(${idx}, 'price', parseFloat(this.value) || 0)" placeholder="Precio" class="border rounded p-1 text-xs">
-              </div>
-            `).join('')}
+          <div class="cart-controls">
+            <button class="btn-qty" onclick="changeQty('${i.key}', -1)">-</button>
+            <span>${i.qty}</span>
+            <button class="btn-qty" onclick="changeQty('${i.key}', 1)">+</button>
           </div>
-        `;
-      } else if (activeBlock.type === 'SOCIALS') {
-        formHTML += `
-          <div class="flex flex-col gap-3">
-            <div>
-              <label class="text-xs font-medium text-gray-600 block mb-1">WhatsApp</label>
-              <input type="text" value="${activeBlock.data.whatsappNumber || ''}" oninput="updateBlockData('whatsappNumber', this.value)" class="w-full border rounded-lg p-2 text-xs">
-            </div>
-            <div>
-              <label class="text-xs font-medium text-gray-600 block mb-1">Instagram Usuario</label>
-              <input type="text" value="${activeBlock.data.instagramUser || ''}" oninput="updateBlockData('instagramUser', this.value)" class="w-full border rounded-lg p-2 text-xs">
-            </div>
-          </div>
-        `;
-      }
-
-      editorSidebar.innerHTML = formHTML;
+        </div>
+      `).join('');
     }
 
-    // Funciones de interacción
-    function selectBlock(id) {
-      activeBlockId = id;
-      renderApp();
+    function openCart() {
+      renderCartItems();
+      document.getElementById('cart-modal').style.display = 'flex';
     }
 
-    function addBlock(type) {
-      const newId = 'b_' + Date.now();
-      let defaultData = {};
-
-      if (type === 'HEADER') defaultData = { title: 'Nuevo Título', subtitle: 'Descripción' };
-      if (type === 'BANNER') defaultData = { imageUrl: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600' };
-      if (type === 'PRODUCTS') defaultData = { items: [] };
-      if (type === 'SOCIALS') defaultData = { whatsappNumber: '593991234567' };
-
-      storeConfig.blocks.push({ id: newId, type, data: defaultData });
-      activeBlockId = newId;
-      renderApp();
+    function closeCart() {
+      document.getElementById('cart-modal').style.display = 'none';
     }
 
-    function removeBlock(id) {
-      storeConfig.blocks = storeConfig.blocks.filter(b => b.id !== id);
-      activeBlockId = storeConfig.blocks.length > 0 ? storeConfig.blocks[0].id : null;
-      renderApp();
-    }
+   function sendWhatsApp() {
+  if (cart.length === 0) return alert('Agrega productos al carrito primero.');
 
-    function updateBlockData(key, value) {
-      const activeBlock = storeConfig.blocks.find(b => b.id === activeBlockId);
-      if (activeBlock) {
-        activeBlock.data[key] = value;
-        renderApp();
-      }
-    }
+  const name = document.getElementById('cust-name').value.trim();
+  const address = document.getElementById('cust-address').value.trim();
+  const notes = document.getElementById('cust-notes').value.trim();
 
-    function addProduct() {
-      const activeBlock = storeConfig.blocks.find(b => b.id === activeBlockId);
-      if (activeBlock && activeBlock.type === 'PRODUCTS') {
-        if (!activeBlock.data.items) activeBlock.data.items = [];
-        activeBlock.data.items.push({
-          id: 'p_' + Date.now(),
-          name: 'Nuevo Producto',
-          price: 10.00,
-          imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=300'
-        });
-        renderApp();
-      }
-    }
+  if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
 
-    function updateProduct(index, field, value) {
-      const activeBlock = storeConfig.blocks.find(b => b.id === activeBlockId);
-      if (activeBlock && activeBlock.data.items[index]) {
-        activeBlock.data.items[index][field] = value;
-        renderApp();
-      }
-    }
+  let message = `*¡Nuevo Pedido - El Garaje!\n\n`;
+  message += `*Cliente:* ${name}\n`;
+  message += `*Ubicación/Dirección:* ${address}\n`;
+  if (notes) message += `*Notas:* ${notes}\n`;
+  message += `\n*Detalle del pedido:*\n`;
 
-    function updateTheme(key, value) {
-      storeConfig.theme[key] = value;
-      renderApp();
-    }
+  cart.forEach(i => {
+    message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`;
+  });
 
-    function exportJSON() {
-      alert("JSON de la aplicación generada:\n\n" + JSON.stringify(storeConfig, null, 2));
-    }
+  const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+  message += `\n*Total a pagar:* $${total.toFixed(2)}`;
 
-    // Inicializar aplicación al cargar la página
-    renderApp();
+  const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
+    renderProducts();
   </script>
 </body>
 </html>
