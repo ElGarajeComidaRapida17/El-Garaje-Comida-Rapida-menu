@@ -4,69 +4,80 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>El Garaje - Comida Rápida</title>
+  <title>El Garaje - Menú</title>
   <style>
-    :root {
+    :root {{
       --primary: #E1AD01;
       --secondary: #1d3557;
-      --light: #f8f9fa;
+      --light: #0b0f19;
       --dark: #212529;
       --accent: #25d366;
-    }
+    }}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: #f4f4f9; padding-bottom: 90px; }
+    * {{ box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }}
+    body {{ background-color: var(--light); padding-bottom: 90px; }}
 
-    /* Header */
-    header { background-color: var(--primary); color: white; padding: 1rem; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    header h1 { font-size: 1.5rem; }
+    /* Banner de Bienvenida Grande */
+    .welcome-banner {{ 
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: block;
+      border-bottom: 3px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }}
+    .banner-container {{ 
+      width: 100%;
+      background-color: var(--dark);
+    }}
 
     /* Categorías */
-    .categories { display: flex; gap: 0.5rem; overflow-x: auto; padding: 1rem; background: white; border-bottom: 1px solid #ddd; }
-    .btn-cat { border: none; background: #eee; padding: 0.6rem 1.2rem; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 600; transition: 0.2s; }
-    .btn-cat.active { background: var(--primary); color: white; }
+    .categories {{ display: flex; gap: 0.5rem; overflow-x: auto; padding: 1rem; background: var(--dark); border-bottom: 1px solid #2d3238; }}
+    .btn-cat {{ border: none; background: #eee; padding: 0.6rem 1.2rem; border-radius: 20px; cursor: pointer; white-space: nowrap; font-weight: 600; transition: 0.2s; }}
+    .btn-cat.active {{ background: var(--primary); color: white; }}
 
     /* Catálogo */
-    .container { max-width: 900px; margin: 1rem auto; padding: 0 1rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .card { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; }
+    .container {{ max-width: 900px; margin: 1rem auto; padding: 0 1rem; }}
+    .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }}
+    .card {{ background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; }}
 
     /* Imagen del producto */
-    .card-img { width: 100%; height: 160px; object-fit: cover; background: #e9ecef; display: block; }
+    .card-img {{ width: 100%; height: 160px; object-fit: cover; background: #e9ecef; display: block; }}
 
-    .card-content { padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; }
-    .card-title { font-size: 1.1rem; font-weight: bold; color: var(--secondary); margin-bottom: 0.3rem; }
-    .card-desc { font-size: 0.85rem; color: #666; margin-bottom: 1rem; flex-grow: 1; }
+    .card-content {{ padding: 1rem; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; background: var(--dark); }}
+    .card-title {{ font-size: 1.1rem; font-weight: bold; color: #ffffff; margin-bottom: 0.3rem; }}
+    .card-desc {{ font-size: 0.85rem; color: #adb5bd; margin-bottom: 1rem; flex-grow: 1; }}
 
     /* Opciones y precio */
-    .variant-select { width: 100%; padding: 0.4rem; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 0.8rem; font-size: 0.85rem; background: #fff; }
-    .card-footer { display: flex; justify-content: space-between; align-items: center; }
-    .price { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
-    .btn-add { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; }
-    .btn-add:hover { background: #c02b37; }
+    .variant-select {{ width: 100%; padding: 0.4rem; border: 1px solid #495057; border-radius: 4px; margin-bottom: 0.8rem; font-size: 0.85rem; background: #1a1d20; color: #ffffff; }}
+    .card-footer {{ display: flex; justify-content: space-between; align-items: center; }}
+    .price {{ font-size: 1.1rem; font-weight: bold; color: var(--primary); }}
+    .btn-add {{ background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; }}
+    .btn-add:hover {{ background: #c02b37; }}
 
     /* Carrito Flotante */
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--secondary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 90; }
-    .btn-cart { background: var(--accent); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }
+    .cart-bar {{ position: fixed; bottom: 0; left: 0; right: 0; background: var(--secondary); color: white; padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 90; }}
+    .btn-cart {{ background: var(--accent); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.95rem; }}
 
     /* Modal Carrito */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: flex-end; }
-    .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 15px 15px 0 0; padding: 1.5rem; max-height: 85vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; margin: 0.8rem 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
-    .cart-controls { display: flex; gap: 0.5rem; align-items: center; }
-    .btn-qty { width: 28px; height: 28px; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    .form-group { margin-top: 1rem; }
-    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 600; }
-    .form-group input, .form-group textarea { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }
-    .btn-send { background: var(--accent); color: white; border: none; width: 100%; padding: 0.9rem; margin-top: 1.2rem; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    .modal {{ display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: flex-end; }}
+    .modal-content {{ background: white; width: 100%; max-width: 500px; border-radius: 15px 15px 0 0; padding: 1.5rem; max-height: 85vh; overflow-y: auto; }}
+    .modal-header {{ display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }}
+    .cart-item {{ display: flex; justify-content: space-between; align-items: center; margin: 0.8rem 0; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }}
+    .cart-controls {{ display: flex; gap: 0.5rem; align-items: center; }}
+    .btn-qty {{ width: 28px; height: 28px; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; font-weight: bold; cursor: pointer; }}
+    .form-group {{ margin-top: 1rem; }}
+    .form-group label {{ display: block; font-size: 0.85rem; margin-bottom: 0.3rem; font-weight: 600; }}
+    .form-group input, .form-group textarea {{ width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; font-size: 0.9rem; }}
+    .btn-send {{ background: var(--accent); color: white; border: none; width: 100%; padding: 0.9rem; margin-top: 1.2rem; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; }}
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>🍔 El Garaje Comida Rápida</h1>
-  </header>
+  <!-- Banner Superior de Bienvenida -->
+  <div class="banner-container">
+    <img src="{banner_src}" alt="El Garaje Banner de Bienvenida" class="welcome-banner">
+  </div>
 
   <!-- Filtros de Categoría -->
   <div class="categories">
@@ -74,7 +85,7 @@
     <button class="btn-cat" onclick="filterCategory('hamburguesas')">Hamburguesas</button>
     <button class="btn-cat" onclick="filterCategory('papas')">Papas</button>
     <button class="btn-cat" onclick="filterCategory('sandwiches')">Sanduches</button>
-    <button class="btn-cat" onclick="filterCategory('hotdogs')">Hot-Dogs</button>
+    <button class="btn-cat" onclick="filterCategory('hotdogs')">Hot-Docs</button>
   </div>
 
   <!-- Contenedor del Catálogo -->
@@ -120,215 +131,217 @@
 
     const products = [
       // HAMBURGUESAS - 1 CARNE
-      { id: 101, name: "Simple de Res", category: "hamburguesas", img: "simplederes.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.00 }, { name: "Con Papas", price: 3.50 }] },
-      { id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simplepollo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simplechorizo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{ name: "Solo Hamburguesa", price: 3.50 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 104, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, salami y papitas.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
+      {{ id: 101, name: "Simple de Res", category: "hamburguesas", img: "simplederes.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{{ name: "Solo Hamburguesa", price: 3.00 }}, {{ name: "Con Papas", price: 3.50 }}] }},
+      {{ id: 102, name: "Simple de Pollo", category: "hamburguesas", img: "simplepollo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{{ name: "Solo Hamburguesa", price: 3.50 }}, {{ name: "Con Papas", price: 4.50 }}] }},
+      {{ id: 103, name: "Simple de Chorizo", category: "hamburguesas", img: "simplechorizo.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, y papitas.", options: [{{ name: "Solo Hamburguesa", price: 3.50 }}, {{ name: "Con Papas", price: 4.50 }}] }},
+      {{ id: 104, name: "Simple de Chuleta", category: "hamburguesas", img: "simple-chuleta.jpeg", desc: "Pan artesanal, salsas, col, tomate, jamón, queso, huevo, salami y papitas.", options: [{{ name: "Solo Hamburguesa", price: 4.50 }}, {{ name: "Con Papas", price: 5.00 }}] }},
 
       // HAMBURGUESAS - DOBLE CARNE
-      { id: 106, name: "Doble de Res", category: "hamburguesas", img: "doblederes.jpeg", desc: "Doble carne de res con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 3.75 }, { name: "Con Papas", price: 4.25 }] },
-      { id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doblepollo.jpeg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 5.00 }] },
+      {{ id: 106, name: "Doble de Res", category: "hamburguesas", img: "doblederes.jpeg", desc: "Doble carne de res con todos los acompañamientos de la casa.", options: [{{ name: "Solo Hamburguesa", price: 3.75 }}, {{ name: "Con Papas", price: 4.25 }}] }},
+      {{ id: 107, name: "Doble de Pollo", category: "hamburguesas", img: "doblepollo.jpeg", desc: "Doble carne de pollo con todos los acompañamientos de la casa.", options: [{{ name: "Solo Hamburguesa", price: 4.00 }}, {{ name: "Con Papas", price: 5.00 }}] }},
 
       // HAMBURGUESAS - CARNES MIXTAS
-      { id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 109, name: "Res - Chorizo", category: "hamburguesas", img: "res-chorizo.jpeg", desc: "Combinación de res y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.00 }, { name: "Con Papas", price: 4.50 }] },
-      { id: 110, name: "Res - Chuleta", category: "hamburguesas", img: "res-chuleta.jpeg", desc: "Combinación de res y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 5.00 }, { name: "Con Papas", price: 5.50 }] },
-      { id: 111, name: "Pollo - Chorizo", category: "hamburguesas", img: "pollo-chorizo.jpeg", desc: "Combinación de pollo y chorizo con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 4.50 }, { name: "Con Papas", price: 5.00 }] },
-      { id: 112, name: "Pollo - Chuleta", category: "hamburguesas", img: "pollo-chuleta.jpeg", desc: "Combinación de pollo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 6.00 }, { name: "Con Papas", price: 6.50 }] },
-      { id: 113, name: "Chorizo - Chuleta", category: "hamburguesas", img: "chorizo-chuleta.jpeg", desc: "Combinación de chorizo y chuleta con acompañamientos.", options: [{ name: "Solo Hamburguesa", price: 7.00 }, { name: "Con Papas", price: 7.50 }] },
+      {{ id: 108, name: "Res - Pollo", category: "hamburguesas", img: "mixta.jpeg.jpeg", desc: "Combinación de res y pollo con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 4.00 }}, {{ name: "Con Papas", price: 4.50 }}] }},
+      {{ id: 109, name: "Res - Chorizo", category: "hamburguesas", img: "res-chorizo.jpeg", desc: "Combinación de res y chorizo con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 4.00 }}, {{ name: "Con Papas", price: 4.50 }}] }},
+      {{ id: 110, name: "Res - Chuleta", category: "hamburguesas", img: "res-chuleta.jpeg", desc: "Combinación de res y chuleta con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 5.00 }}, {{ name: "Con Papas", price: 5.50 }}] }},
+      {{ id: 111, name: "Pollo - Chorizo", category: "hamburguesas", img: "pollo-chorizo.jpeg", desc: "Combinación de pollo y chorizo con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 4.50 }}, {{ name: "Con Papas", price: 5.00 }}] }},
+      {{ id: 112, name: "Pollo - Chuleta", category: "hamburguesas", img: "pollo-chuleta.jpeg", desc: "Combinación de pollo y chuleta con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 6.00 }}, {{ name: "Con Papas", price: 6.50 }}] }},
+      {{ id: 113, name: "Chorizo - Chuleta", category: "hamburguesas", img: "chorizo-chuleta.jpeg", desc: "Combinación de chorizo y chuleta con acompañamientos.", options: [{{ name: "Solo Hamburguesa", price: 7.00 }}, {{ name: "Con Papas", price: 7.50 }}] }},
 
       // HAMBURGUESAS - ESPECIALES
-      { id: 115, name: "Tuca (Chorizo)", category: "hamburguesas", img: "tucachorizo.JPEG.jpeg", desc: "Carne de res (200g), pollo, chorizo (ternera o paisa) y porción de papas.", price: 6.50 },
-      { id: 116, name: "Tuca (Chuleta)", category: "hamburguesas", img: "tucachuleta.JPEG.jpeg", desc: "Carne de res (200g), pollo, chuleta y porción de papas.", price: 7.50 },
-      { id: 117, name: "Parriburguer", category: "hamburguesas", img: "parriburguer.jpeg", desc: "Parrillada de pollo, carne, chancho y chorizo; carne de res (200g) y papas.", price: 6.50 },
-      { id: 118, name: "Pelúa Burger", category: "hamburguesas", img: "peluaburger.jpeg.jpeg", desc: "Carne mechada con queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
-      { id: 119, name: "Chiliburger", category: "hamburguesas", img: "chiliburger.jpeg", desc: "Chili con queso, salsa de queso, carne de res (200g) y papas.", price: 6.50 },
-      { id: 120, name: "Cheese Burger", category: "hamburguesas", img: "cheese-burger.jpeg", desc: "Triple queso, salsa de queso, carne de res (200g) y papas.", price: 7.00 },
-      { id: 121, name: "Bacon Burger", category: "hamburguesas", img: "baconburger.jpeg.jpeg", desc: "Tocino (100g), queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 },
-      { id: 122, name: "Mushroom Burger", category: "hamburguesas", img: "mushroom.png", desc: "Champiñones, crema de queso, cebolla caramelizada, carne (200g) y papas.", price: 8.00 },
+      {{ id: 115, name: "Tuca (Chorizo)", category: "hamburguesas", img: "tucachorizo.JPEG.jpeg", desc: "Carne de res (200g), pollo, chorizo (ternera o paisa) y porción de papas.", price: 6.50 }},
+      {{ id: 116, name: "Tuca (Chuleta)", category: "hamburguesas", img: "tucachuleta.JPEG.jpeg", desc: "Carne de res (200g), pollo, chuleta y porción de papas.", price: 7.50 }},
+      {{ id: 117, name: "Parriburguer", category: "hamburguesas", img: "parriburguer.jpeg", desc: "Parrillada de pollo, carne, chancho y chorizo; carne de res (200g) y papas.", price: 6.50 }},
+      {{ id: 118, name: "Pelúa Burger", category: "hamburguesas", img: "peluaburger.jpeg.jpeg", desc: "Carne mechada con queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 }},
+      {{ id: 119, name: "Chiliburger", category: "hamburguesas", img: "chiliburger.jpeg", desc: "Chili con queso, salsa de queso, carne de res (200g) y papas.", price: 6.50 }},
+      {{ id: 120, name: "Cheese Burger", category: "hamburguesas", img: "cheese-burger.jpeg", desc: "Triple queso, salsa de queso, carne de res (200g) y papas.", price: 7.00 }},
+      {{ id: 121, name: "Bacon Burger", category: "hamburguesas", img: "baconburger.jpeg.jpeg", desc: "Tocino (100g), queso, salsa de queso, carne de res (200g) y papas.", price: 7.50 }},
+      {{ id: 122, name: "Mushroom Burger", category: "hamburguesas", img: "mushroom.png", desc: "Champiñones, crema de queso, cebolla caramelizada, carne (200g) y papas.", price: 8.00 }},
 
       // PAPAS
-      { id: 201, name: "Papa Tradicional", category: "papas", img: "papatradicional.jpg", desc: "Papas fritas con salchicha y salsas.", price: 1.75 },
-      { id: 202, name: "Papa Extrema", category: "papas", img: "papaextrema.jpeg.jpeg", desc: "Papas fritas con salchicha, salsas, queso, salsa de queso y tocino.", price: 3.75 },
-      { id: 203, name: "Parripapa", category: "papas", img: "parripapa.jpeg.jpeg", desc: "Papas fritas, parrillada (pollo, carne, chancho, chorizo), salsas y BBQ.", price: 4.25 },
-      { id: 204, name: "Chilipapa", category: "papas", img: "chilipapa.jpeg.jpeg", desc: "Papas fritas, chili con queso, salsa de queso y salsas.", price: 4.25 },
-      { id: 205, name: "Papa Pelúa", category: "papas", img: "papapelua.jpeg.jpeg", desc: "Papas fritas, carne de res mechada con queso, salsa de queso y salsas.", price: 5.50 },
-      { id: 206, name: "Pepiada", category: "papas", img: "papapepiada.png.png", desc: "Papas fritas, ensalada de pollo con aguacate, mayonesa y cebolla.", price: 5.50 },
-      { id: 207, name: "Monterey", category: "papas", img: "papamonterey.jpeg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 },
-      { id: 208, name: "Lomo Churrasco", category: "papas", img: "lomo churrasco.jpeg.jpeg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 },
-      { id: 209, name: "Bandera", category: "papas", img: "bandera.jpeg.jpeg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 },
-      { id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 },
+      {{ id: 201, name: "Papa Tradicional", category: "papas", img: "papatradicional.jpg", desc: "Papas fritas con salchicha y salsas.", price: 1.75 }},
+      {{ id: 202, name: "Papa Extrema", category: "papas", img: "papaextrema.jpeg.jpeg", desc: "Papas fritas con salchicha, salsas, queso, salsa de queso y tocino.", price: 3.75 }},
+      {{ id: 203, name: "Parripapa", category: "papas", img: "parripapa.jpeg.jpeg", desc: "Papas fritas, parrillada (pollo, carne, chancho, chorizo), salsas y BBQ.", price: 4.25 }},
+      {{ id: 204, name: "Chilipapa", category: "papas", img: "chilipapa.jpeg.jpeg", desc: "Papas fritas, chili con queso, salsa de queso y salsas.", price: 4.25 }},
+      {{ id: 205, name: "Papa Pelúa", category: "papas", img: "papapelua.jpeg.jpeg", desc: "Papas fritas, carne de res mechada con queso, salsa de queso y salsas.", price: 5.50 }},
+      {{ id: 206, name: "Pepiada", category: "papas", img: "papapepiada.png.png", desc: "Papas fritas, ensalada de pollo con aguacate, mayonesa y cebolla.", price: 5.50 }},
+      {{ id: 207, name: "Monterey", category: "papas", img: "papamonterey.jpeg", desc: "Papas fritas, pechuga de pollo, tocino, queso, salsa de queso y BBQ.", price: 5.50 }},
+      {{ id: 208, name: "Lomo Churrasco", category: "papas", img: "lomo churrasco.jpeg.jpeg", desc: "Papas fritas, lomo de res, pimiento y cebolla salteados, huevo y salsas.", price: 5.50 }},
+      {{ id: 209, name: "Bandera", category: "papas", img: "bandera.jpeg.jpeg", desc: "Porción grande de papas: Extrema, Parripapa y Chilipapa con salsas.", price: 12.00 }},
+      {{ id: 210, name: "Tablita", category: "papas", img: "tablita.jpeg", desc: "2 porciones de papas con salsas, queso, alitas, tequeños y parrillada.", price: 15.00 }},
 
       // SANDWICHES
-      { id: 301, name: "Sanduche Cubano", category: "sandwiches", img: "cubano.jpeg", desc: "Pan, lechuga, tomate, salsas, jamón, queso, tocino, pepinillos y papas.", price: 4.50 },
-      { id: 302, name: "Sanduche Monterey", category: "sandwiches", img: "monterey.jpeg", desc: "Pan, lechuga, salsas, pechuga de pollo, tocino, queso, BBQ y papas.", price: 5.50 },
-      { id: 303, name: "Sanduche Pepiado", category: "sandwiches", img: "sanduchepepiado.jpeg.jpeg", desc: "Pan, lechuga, ensalada de pollo con aguacate, mayonesa, cebolla y papas.", price: 5.50 },
-      { id: 304, name: "Sanduche Mixed Meats", category: "sandwiches", img: "carnesmix.jpeg", desc: "Pan, lechuga, parrillada mixta, vegetales y papas.", price: 5.50 },
-      { id: 305, name: "Sanduche Pelúo", category: "sandwiches", img: "sanduchepeluo.png", desc: "Pan, lechuga, carne de res mechada con queso, salsa de queso y papas.", price: 6.50 },
-      { id: 306, name: "Sanduche Filadelfia", category: "sandwiches", img: "filadelfia.jpeg", desc: "Pan, queso crema, lomo de res con cebolla salteada, queso amarillo y papas.", price: 5.50 },
-      { id: 307, name: "Sanduche Atún", category: "sandwiches", img: "atun.jpeg", desc: "Pan, lechuga, atún con aderezo especial, pepinillos y papas.", price: 5.50 },
+      {{ id: 301, name: "Sanduche Cubano", category: "sandwiches", img: "cubano.jpeg", desc: "Pan, lechuga, tomate, salsas, jamón, queso, tocino, pepinillos y papas.", price: 4.50 }},
+      {{ id: 302, name: "Sanduche Monterey", category: "sandwiches", img: "monterey.jpeg", desc: "Pan, lechuga, salsas, pechuga de pollo, tocino, queso, BBQ y papas.", price: 5.50 }},
+      {{ id: 303, name: "Sanduche Pepiado", category: "sandwiches", img: "sanduchepepiado.jpeg.jpeg", desc: "Pan, lechuga, ensalada de pollo con aguacate, mayonesa, cebolla y papas.", price: 5.50 }},
+      {{ id: 304, name: "Sanduche Mixed Meats", category: "sandwiches", img: "carnesmix.jpeg", desc: "Pan, lechuga, parrillada mixta, vegetales y papas.", price: 5.50 }},
+      {{ id: 305, name: "Sanduche Pelúo", category: "sandwiches", img: "sanduchepeluo.png", desc: "Pan, lechuga, carne de res mechada con queso, salsa de queso y papas.", price: 6.50 }},
+      {{ id: 306, name: "Sanduche Filadelfia", category: "sandwiches", img: "filadelfia.jpeg", desc: "Pan, queso crema, lomo de res con cebolla salteada, queso amarillo y papas.", price: 5.50 }},
+      {{ id: 307, name: "Sanduche Atún", category: "sandwiches", img: "atun.jpeg", desc: "Pan, lechuga, atún con aderezo especial, pepinillos y papas.", price: 5.50 }},
 
-      // HOT DOGS
-      { id: 401, name: "Hot-Dog Tradicional", category: "hotdogs", img: "hotdog.jpeg", desc: "Salchicha, salsas y papita chip.", price: 1.75 },
-      { id: 402, name: "Hot-Dog Ranchero", category: "hotdogs", img: "ranchero.jpeg", desc: "Salchicha, salsas, papita chip, tocino, queso y salsa de queso.", price: 3.50 },
-      { id: 403, name: "Chilidog", category: "hotdogs", img: "chilidog.jpeg", desc: "Salchicha, salsas, papita chip, chili, queso y salsa de queso.", price: 3.50 }
+      // HOT DOG
+      {{ id: 401, name: "Hot-Dog Tradicional", category: "hotdogs", img: "hotdog.jpeg", desc: "Salchicha, salsas y papita chip.", price: 1.75 }},
+      {{ id: 402, name: "Hot-Dog Ranchero", category: "hotdogs", img: "ranchero.jpeg", desc: "Salchicha, salsas, papita chip, tocino, queso y salsa de queso.", price: 3.50 }},
+      {{ id: 403, name: "Chilidog", category: "hotdogs", img: "chilidog.jpeg", desc: "Salchicha, salsas, papita chip, chili, queso y salsa de queso.", price: 3.50 }}
     ];
 
     let cart = [];
 
-    function renderProducts(filter = 'todos') {
+    function renderProducts(filter = 'todos') {{
       const grid = document.getElementById('product-grid');
       grid.innerHTML = '';
 
       const filtered = filter === 'todos' ? products : products.filter(p => p.category === filter);
 
-      filtered.forEach(p => {
+      filtered.forEach(p => {{
         let optionsHTML = '';
         let initialPrice = p.price;
 
-        if (p.options) {
+        if (p.options) {{
           initialPrice = p.options[0].price;
-          optionsHTML = `<select class="variant-select" id="select-${p.id}" onchange="updateCardPrice(${p.id})">
-            ${p.options.map((opt, i) => `<option value="${i}">${opt.name} ($${opt.price.toFixed(2)})</option>`).join('')}
+          optionsHTML = `<select class="variant-select" id="select-${{p.id}}" onchange="updateCardPrice(${{p.id}})">
+            ${{p.options.map((opt, i) => `<option value="${{i}}">${{opt.name}} (${{opt.price.toFixed(2)}})</option>`).join('')}}
           </select>`;
-        }
+        }}
 
         const imgSrc = p.img ? p.img : 'https://via.placeholder.com/300x160?text=Comida+Rapida';
 
         grid.innerHTML += `
           <div class="card">
-            <img src="${imgSrc}" alt="${p.name}" class="card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160?text=${encodeURIComponent(p.name)}';">
+            <img src="${{imgSrc}}" alt="${{p.name}}" class="card-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160?text=${{encodeURIComponent(p.name)}}';">
             <div class="card-content">
               <div>
-                <div class="card-title">${p.name}</div>
-                <div class="card-desc">${p.desc}</div>
+                <div class="card-title">${{p.name}}</div>
+                <div class="card-desc">${{p.desc}}</div>
               </div>
               <div>
-                ${optionsHTML}
+                ${{optionsHTML}}
                 <div class="card-footer">
-                  <span class="price" id="price-${p.id}">$${initialPrice.toFixed(2)}</span>
-                  <button class="btn-add" onclick="addToCart(${p.id})">Agregar</button>
+                  <span class="price" id="price-${{p.id}}">$${{initialPrice.toFixed(2)}}</span>
+                  <button class="btn-add" onclick="addToCart(${{p.id}})">Agregar</button>
                 </div>
               </div>
             </div>
           </div>
         `;
-      });
-    }
+      }});
+    }}
 
-    function updateCardPrice(id) {
+    function updateCardPrice(id) {{
       const prod = products.find(p => p.id === id);
-      const select = document.getElementById(`select-${id}`);
+      const select = document.getElementById(`select-${{id}}`);
       const selectedOpt = prod.options[select.value];
-      document.getElementById(`price-${id}`).innerText = `$${selectedOpt.price.toFixed(2)}`;
-    }
+      document.getElementById(`price-${{id}}`).innerText = `$${{selectedOpt.price.toFixed(2)}}`;
+    }}
 
-    function filterCategory(cat) {
+    function filterCategory(cat) {{
       document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
       renderProducts(cat);
-    }
+    }}
 
-    function addToCart(id) {
+    function addToCart(id) {{
       const prod = products.find(p => p.id === id);
       let selectedName = prod.name;
       let selectedPrice = prod.price;
 
-      if (prod.options) {
-        const select = document.getElementById(`select-${id}`);
+      if (prod.options) {{
+        const select = document.getElementById(`select-${{id}}`);
         const opt = prod.options[select.value];
-        selectedName = `${prod.name} (${opt.name})`;
+        selectedName = `${{prod.name}} (${{opt.name}})`;
         selectedPrice = opt.price;
-      }
+      }}
 
-      const itemKey = `${id}-${selectedName}`;
+      const itemKey = `${{id}}-${{selectedName}}`;
       const existing = cart.find(i => i.key === itemKey);
 
-      if (existing) {
+      if (existing) {{
         existing.qty++;
-      } else {
-        cart.push({ key: itemKey, id: id, name: selectedName, price: selectedPrice, qty: 1 });
-      }
+      }} else {{
+        cart.push({{ key: itemKey, id: id, name: selectedName, price: selectedPrice, qty: 1 }});
+      }}
 
       updateCartUI();
-    }
+    }}
 
-    function changeQty(key, delta) {
+    function changeQty(key, delta) {{
       const item = cart.find(i => i.key === key);
-      if (item) {
+      if (item) {{
         item.qty += delta;
-        if (item.qty <= 0) {
+        if (item.qty <= 0) {{
           cart = cart.filter(i => i.key !== key);
-        }
-      }
+        }}
+      }}
       updateCartUI();
       renderCartItems();
-    }
+    }}
 
-    function updateCartUI() {
+    function updateCartUI() {{
       const totalCount = cart.reduce((sum, i) => sum + i.qty, 0);
       const totalPrice = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       document.getElementById('cart-count').innerText = totalCount;
       document.getElementById('cart-total').innerText = totalPrice.toFixed(2);
-    }
+    }}
 
-    function renderCartItems() {
+    function renderCartItems() {{
       const container = document.getElementById('cart-items');
-      if (cart.length === 0) {
+      if (cart.length === 0) {{
         container.innerHTML = '<p style="text-align:center; margin: 2rem 0; color: #777;">Tu carrito está vacío</p>';
         return;
-      }
+      }}
 
       container.innerHTML = cart.map(i => `
         <div class="cart-item">
           <div>
-            <strong>${i.name}</strong><br>
-            <small>$${i.price.toFixed(2)} c/u</small>
+            <strong>${{i.name}}</strong><br>
+            <small>$${{i.price.toFixed(2)}} c/u</small>
           </div>
           <div class="cart-controls">
-            <button class="btn-qty" onclick="changeQty('${i.key}', -1)">-</button>
-            <span>${i.qty}</span>
-            <button class="btn-qty" onclick="changeQty('${i.key}', 1)">+</button>
+            <button class="btn-qty" onclick="changeQty(\'${{i.key}}\
+', -1)">-</button>
+            <span>${{i.qty}}</span>
+            <button class="btn-qty" onclick="changeQty(\'${{i.key}}\
+', 1)">+</button>
           </div>
         </div>
       `).join('');
-    }
+    }}
 
-    function openCart() {
+    function openCart() {{
       renderCartItems();
       document.getElementById('cart-modal').style.display = 'flex';
-    }
+    }}
 
-    function closeCart() {
+    function closeCart() {{
       document.getElementById('cart-modal').style.display = 'none';
-    }
+    }}
 
-   function sendWhatsApp() {
-  if (cart.length === 0) return alert('Agrega productos al carrito primero.');
+    function sendWhatsApp() {{
+      if (cart.length === 0) return alert('Agrega productos al carrito primero.');
 
-  const name = document.getElementById('cust-name').value.trim();
-  const address = document.getElementById('cust-address').value.trim();
-  const notes = document.getElementById('cust-notes').value.trim();
+      const name = document.getElementById('cust-name').value.trim();
+      const address = document.getElementById('cust-address').value.trim();
+      const notes = document.getElementById('cust-notes').value.trim();
 
-  if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
+      if (!name || !address) return alert('Por favor, ingresa tu nombre y dirección/mesa.');
 
-  let message = `*¡Nuevo Pedido - El Garaje!*\n\n`;
-  message += `*Cliente:* ${name}\n`;
-  message += `*Ubicación/Dirección:* ${address}\n`;
-  if (notes) message += `*Notas:* ${notes}\n`;
-  message += `\n*Detalle del pedido:*\n`;
+      let message = `*¡Nuevo Pedido - El Garaje!\n\n`;
+      message += `*Cliente:* ${{name}}\n`;
+      message += `*Ubicación/Dirección:* ${{address}}\n`;
+      if (notes) message += `*Notas:* ${{notes}}\n`;
+      message += `\n*Detalle del pedido:*\n`;
 
-  cart.forEach(i => {
-    message += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toFixed(2)}\n`;
-  });
+      cart.forEach(i => {{
+        message += `• ${{i.qty}}x ${{i.name}} - $${{(i.price * i.qty).toFixed(2)}}\n`;
+      }});
 
-  const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-  message += `\n*Total a pagar:* $${total.toFixed(2)}`;
+      const total = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      message += `\n*Total a pagar:* $${{total.toFixed(2)}}`;
 
-  const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
-  window.open(url, '_blank');
-}
+      const url = `https://wa.me/${{PHONE_NUMBER}}?text=${{encodeURIComponent(message)}}`;
+      window.open(url, '_blank');
+    }}
 
     renderProducts();
   </script>
